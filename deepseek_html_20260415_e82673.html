@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>植树问题·智慧林探险 | 交互式习题（有对错判断）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #eaf4e3;
+            font-family: 'Segoe UI', 'Comic Neue', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 30px 20px;
+            color: #2c4a2c;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #2d6a2b, #6c9e4a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            font-size: 1rem;
+            background: #fef7cf;
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 40px;
+        }
+
+        .section {
+            background: #fffcf0;
+            border-radius: 48px 32px;
+            padding: 20px 24px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-left: 12px solid #f4a261;
+            padding-left: 16px;
+            color: #3b6427;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 28px;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 32px;
+            padding: 18px 20px 24px;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+            transition: 0.2s;
+            border: 1px solid #e2e6c3;
+        }
+
+        .question-text {
+            font-weight: 700;
+            background: #f8f3df;
+            padding: 10px 14px;
+            border-radius: 28px;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .illustration {
+            background: #eef6e5;
+            border-radius: 28px;
+            padding: 10px;
+            margin: 12px 0;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            background: #fef9e6;
+            border-radius: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .answer-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0 12px;
+        }
+        .answer-input {
+            flex: 2;
+            padding: 10px 14px;
+            border-radius: 60px;
+            border: 2px solid #c2d6a5;
+            font-size: 1rem;
+            background: #fffaf2;
+        }
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #fcf8e8;
+            padding: 6px 12px;
+            border-radius: 48px;
+        }
+        button {
+            background: #6b9e4b;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        button:active {
+            transform: scale(0.96);
+        }
+        .feedback {
+            margin-top: 12px;
+            padding: 8px 14px;
+            border-radius: 28px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: 0.1s;
+        }
+        .feedback.correct {
+            background: #c8e6b5;
+            color: #1f5a0e;
+            border-left: 6px solid #2e7d32;
+        }
+        .feedback.wrong {
+            background: #ffe0cc;
+            color: #b13e0e;
+            border-left: 6px solid #f39c12;
+        }
+        .feedback.neutral {
+            background: #f1f1e6;
+            color: #5a6e4a;
+        }
+        hr {
+            margin: 8px 0;
+        }
+        .footnote {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c6d;
+        }
+        @media (max-width: 720px) {
+            .question-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>🌳 植树问题 · 智慧林探险 🌲</h1>
+        <p>✏️ 每一道题都有“检查”按钮，点一点就知道对错！</p>
+    </div>
+
+    <!-- 填空题区域 -->
+    <div class="section">
+        <h2>📖 一、填空小挑战</h2>
+        <div class="question-grid" id="fillGrid"></div>
+    </div>
+
+    <!-- 选择题区域 -->
+    <div class="section">
+        <h2>🔘 二、选一选，谁正确？</h2>
+        <div class="question-grid" id="choiceGrid"></div>
+    </div>
+
+    <!-- 应用题区域 -->
+    <div class="section">
+        <h2>🧠 三、应用智慧林</h2>
+        <div class="question-grid" id="appGrid"></div>
+    </div>
+    <div class="footnote">✨ 点击“检查”按钮 → 立刻显示✅正确或❌错误，并给出解析 ✨</div>
+</div>
+
+<script>
+    // ---------- 题目数据 ----------
+    const fillQuestions = [
+        { text: "一条长 20 米的小路一边种树，每隔 5 米种一棵（两端都种），一共需要种（ ）棵树。", correct: 5, hint: "20÷5=4个间隔，两端都种：4+1=5棵", type: "fill", draw: (canvasId) => drawLine(canvasId, 20, 5, 'both') },
+        { text: "一条走廊长 24 米，每隔 3 米摆一盆花（只摆一端，另一端不摆），一共要摆（ ）盆花。", correct: 8, hint: "24÷3=8，只摆一端 → 8盆", draw: (canvasId) => drawLine(canvasId, 24, 3, 'one') },
+        { text: "一个圆形花坛周长 30 米，每隔 3 米种一棵树，一共可以种（ ）棵树。", correct: 10, hint: "封闭图形：棵数=周长÷间隔 = 30÷3=10", draw: (canvasId) => drawCircle(canvasId, 30, 3) },
+        { text: "把一根木头锯成 5 段，每锯一次需要 4 分钟，一共需要（ ）分钟。", correct: 16, hint: "锯成5段需要锯4次，4×4=16分钟", draw: (canvasId) => drawSaw(canvasId, 5) }
+    ];
+
+    const choiceQuestions = [
+        { text: "100米跑道一边插彩旗，每隔10米插一面（两端都不插），需要多少面？", options: [9,10,11,12], correct: 9, hint: "100÷10=10个间隔，两端不插：10-1=9面", draw: (canvasId) => drawLine(canvasId, 100, 10, 'none') },
+        { text: "时钟6点敲6下，10秒敲完。12点敲12下需要几秒？", options: [20,22,24,26], correct: 22, hint: "敲6下5个间隔，每间隔2秒；敲12下11间隔，11×2=22秒", draw: (canvasId) => drawClockHint(canvasId) },
+        { text: "学校60米走廊，每隔4米放一盆花（两端都要放），需要多少盆？", options: [14,15,16,17], correct: 16, hint: "60÷4=15间隔，两端都放：15+1=16盆", draw: (canvasId) => drawLine(canvasId, 60, 4, 'both') }
+    ];
+
+    const appQuestions = [
+        { text: "200米公路每隔5米种树(两端都种) → 后来改为两端不种，两种方案相差几棵树？", correct: 2, hint: "两端都种：200÷5+1=41棵；两端不种：200÷5-1=39棵；相差2棵", draw: (canvasId) => drawLine(canvasId, 200, 5, 'both') },
+        { text: "圆形操场周长120米，每隔6米插一面旗，改为每隔8米，相差多少面旗？", correct: 5, hint: "120÷6=20面，120÷8=15面，相差5面", draw: (canvasId) => drawCircle(canvasId, 120, 6) },
+        { text: "工人锯木头，第一次锯成2段用了6分钟，保持同样速度锯成7段需要几分钟？", correct: 36, hint: "锯成2段锯1次用6分钟；锯成7段要锯6次，6×6=36分钟", draw: (canvasId) => drawSaw(canvasId, 7) },
+        { text: "小明从1楼到4楼用30秒，照这样从1楼到8楼需要多少秒？", correct: 70, hint: "1→4楼有3段楼梯，每段10秒；1→8楼有7段，7×10=70秒", draw: (canvasId) => drawStairsHint(canvasId) },
+        { text: "一条小路从头到尾种12棵树，相邻间距4米，小路长多少米？", correct: 44, hint: "两端都种：间隔数=12-1=11，路长=11×4=44米", draw: (canvasId) => drawTreeLine(canvasId, 12, 4) }
+    ];
+
+    // 绘图辅助函数
+    function drawLine(canvasId, lengthM, interval, type) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const startX = 30, endX = w - 30;
+        ctx.beginPath(); ctx.moveTo(startX, h/2); ctx.lineTo(endX, h/2); ctx.strokeStyle = '#8B5A2B'; ctx.lineWidth = 2; ctx.stroke();
+        const intervals = lengthM / interval;
+        const step = (endX - startX) / intervals;
+        if (type === 'both') {
+            for (let i = 0; i <= intervals; i++) {
+                let x = startX + i * step;
+                ctx.fillStyle = '#2E7D32';
+                ctx.beginPath(); ctx.arc(x, h/2-8, 5, 0, 2*Math.PI); ctx.fill();
+                ctx.fillStyle = '#5D3A1A'; ctx.fillRect(x-2, h/2-16, 4, 10);
+            }
+        } else if (type === 'none') {
+            for (let i = 1; i < intervals; i++) {
+                let x = startX + i * step;
+                ctx.fillStyle = '#388E3C';
+                ctx.beginPath(); ctx.arc(x, h/2-8, 5, 0, 2*Math.PI); ctx.fill();
+                ctx.fillStyle = '#5D3A1A'; ctx.fillRect(x-2, h/2-16, 4, 10);
+            }
+            ctx.fillStyle = '#D32F2F';
+            ctx.fillRect(startX-6, h/2-12, 8, 20);
+            ctx.fillRect(endX-2, h/2-12, 8, 20);
+        } else if (type === 'one') {
+            for (let i = 0; i <= intervals; i++) {
+                let x = startX + i * step;
+                if (i === 0) { ctx.fillStyle = '#2E7D32'; ctx.beginPath(); ctx.arc(x, h/2-8, 5, 0, 2*Math.PI); ctx.fill(); }
+                else { ctx.fillStyle = '#388E3C'; ctx.beginPath(); ctx.arc(x, h/2-8, 5, 0, 2*Math.PI); ctx.fill(); }
+                ctx.fillStyle = '#5D3A1A'; ctx.fillRect(x-2, h/2-16, 4, 10);
+            }
+        }
+    }
+
+    function drawCircle(canvasId, perimeter, interval) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const centerX = w/2, centerY = h/2, radius = Math.min(w, h)/2 - 12;
+        ctx.beginPath(); ctx.arc(centerX, centerY, radius, 0, 2*Math.PI); ctx.strokeStyle = '#7B5F3A'; ctx.stroke();
+        const treeCount = perimeter / interval;
+        for (let i = 0; i < treeCount; i++) {
+            let angle = i * 2 * Math.PI / treeCount;
+            let x = centerX + radius * Math.cos(angle);
+            let y = centerY + radius * Math.sin(angle);
+            ctx.fillStyle = '#2B7A3E';
+            ctx.beginPath(); ctx.arc(x, y, 6, 0, 2*Math.PI); ctx.fill();
+            ctx.fillStyle = '#5D3A1A'; ctx.fillRect(x-2, y-3, 4, 8);
+        }
+    }
+
+    function drawSaw(canvasId, segments) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const rectW = w - 40, rectH = 26;
+        const x0 = 20, y0 = h/2 - 13;
+        ctx.fillStyle = '#CDA87C'; ctx.fillRect(x0, y0, rectW, rectH);
+        ctx.fillStyle = '#8B5A2B';
+        const gap = rectW / segments;
+        for (let i = 1; i < segments; i++) {
+            ctx.beginPath(); ctx.moveTo(x0 + i*gap, y0); ctx.lineTo(x0 + i*gap - 5, y0-10); ctx.lineTo(x0 + i*gap + 5, y0-10); ctx.fill();
+        }
+    }
+
+    function drawTreeLine(canvasId, trees, distance) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const startX = 30, endX = w - 30;
+        ctx.beginPath(); ctx.moveTo(startX, h/2); ctx.lineTo(endX, h/2); ctx.stroke();
+        const step = (endX - startX) / (trees - 1);
+        for (let i = 0; i < trees; i++) {
+            let x = startX + i * step;
+            ctx.fillStyle = '#2E7D32';
+            ctx.beginPath(); ctx.arc(x, h/2-8, 5, 0, 2*Math.PI); ctx.fill();
+            ctx.fillRect(x-2, h/2-16, 4, 10);
+        }
+    }
+
+    function drawClockHint(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "14px 'Segoe UI'";
+        ctx.fillStyle = "#5a4a2e";
+        ctx.fillText("🔔 敲6下 → 5个间隔", 20, 30);
+        ctx.fillText("每间隔2秒 → 敲12下=11间隔=22秒", 20, 55);
+    }
+    function drawStairsHint(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#6c8b4e";
+        ctx.fillText("🏢 1F → 4F 共3段楼梯", 20, 30);
+        ctx.fillText("每段10秒 → 1F→8F 共7段 = 70秒", 20, 55);
+    }
+
+    // 生成反馈组件
+    function buildFillCard(q, idx) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'question-card';
+        const canvasId = `fillCanvas${idx}`;
+        cardDiv.innerHTML = `
+            <div class="question-text">${q.text}</div>
+            <div class="illustration"><canvas id="${canvasId}" width="280" height="80" style="max-width:100%; height:auto"></canvas></div>
+            <div class="answer-area">
+                <input type="number" id="fillInput${idx}" class="answer-input" placeholder="输入数字">
+                <button data-idx="${idx}" class="checkFillBtn">🌱 检查</button>
+            </div>
+            <div id="fillFeedback${idx}" class="feedback neutral">💡 点击检查，就知道对错啦</div>
+        `;
+        return cardDiv;
+    }
+
+    function buildChoiceCard(q, idx) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'question-card';
+        const canvasId = `choiceCanvas${idx}`;
+        let optsHtml = '';
+        q.options.forEach(opt => {
+            optsHtml += `<label><input type="radio" name="choice${idx}" value="${opt}"> ${opt}</label>`;
+        });
+        cardDiv.innerHTML = `
+            <div class="question-text">${q.text}</div>
+            <div class="illustration"><canvas id="${canvasId}" width="280" height="80" style="max-width:100%"></canvas></div>
+            <div class="answer-area">
+                <div class="radio-group">${optsHtml}</div>
+                <button data-idx="${idx}" class="checkChoiceBtn">✅ 选择</button>
+            </div>
+            <div id="choiceFeedback${idx}" class="feedback neutral">🤔 选好答案后点击“选择”</div>
+        `;
+        return cardDiv;
+    }
+
+    function buildAppCard(q, idx) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'question-card';
+        const canvasId = `appCanvas${idx}`;
+        cardDiv.innerHTML = `
+            <div class="question-text">${q.text}</div>
+            <div class="illustration"><canvas id="${canvasId}" width="280" height="80" style="max-width:100%"></canvas></div>
+            <div class="answer-area">
+                <input type="number" id="appInput${idx}" class="answer-input" placeholder="输入答案">
+                <button data-idx="${idx}" class="checkAppBtn">🧠 检查</button>
+            </div>
+            <div id="appFeedback${idx}" class="feedback neutral">📝 输入数字，点击检查</div>
+        `;
+        return cardDiv;
+    }
+
+    // 渲染所有题目
+    const fillGrid = document.getElementById('fillGrid');
+    fillQuestions.forEach((q, i) => {
+        const card = buildFillCard(q, i);
+        fillGrid.appendChild(card);
+        setTimeout(() => q.draw(`fillCanvas${i}`), 10);
+    });
+    const choiceGrid = document.getElementById('choiceGrid');
+    choiceQuestions.forEach((q, i) => {
+        const card = buildChoiceCard(q, i);
+        choiceGrid.appendChild(card);
+        setTimeout(() => q.draw(`choiceCanvas${i}`), 10);
+    });
+    const appGrid = document.getElementById('appGrid');
+    appQuestions.forEach((q, i) => {
+        const card = buildAppCard(q, i);
+        appGrid.appendChild(card);
+        setTimeout(() => q.draw(`appCanvas${i}`), 10);
+    });
+
+    // 绑定事件（填空题）
+    document.querySelectorAll('.checkFillBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = btn.getAttribute('data-idx');
+            const inputEl = document.getElementById(`fillInput${idx}`);
+            const userVal = parseInt(inputEl.value);
+            const q = fillQuestions[idx];
+            const fbDiv = document.getElementById(`fillFeedback${idx}`);
+            const isCorrect = (userVal === q.correct);
+            if (isCorrect) {
+                fbDiv.innerHTML = `✅ 正确！ ${q.hint}`;
+                fbDiv.className = 'feedback correct';
+            } else {
+                fbDiv.innerHTML = `❌ 错误！ 正确答案是 ${q.correct}。 ${q.hint} （您的答案：${isNaN(userVal) ? '未填' : userVal}）`;
+                fbDiv.className = 'feedback wrong';
+            }
+        });
+    });
+    // 选择题
+    document.querySelectorAll('.checkChoiceBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = btn.getAttribute('data-idx');
+            const selectedRadio = document.querySelector(`input[name="choice${idx}"]:checked`);
+            const q = choiceQuestions[idx];
+            const fbDiv = document.getElementById(`choiceFeedback${idx}`);
+            if (!selectedRadio) {
+                fbDiv.innerHTML = `⚠️ 请先选择一个选项！`;
+                fbDiv.className = 'feedback wrong';
+                return;
+            }
+            const userVal = parseInt(selectedRadio.value);
+            const isCorrect = (userVal === q.correct);
+            if (isCorrect) {
+                fbDiv.innerHTML = `✅ 正确！ ${q.hint}`;
+                fbDiv.className = 'feedback correct';
+            } else {
+                fbDiv.innerHTML = `❌ 错误！ 正确答案是 ${q.correct}。 ${q.hint} （您选了 ${userVal}）`;
+                fbDiv.className = 'feedback wrong';
+            }
+        });
+    });
+    // 应用题
+    document.querySelectorAll('.checkAppBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = btn.getAttribute('data-idx');
+            const inputEl = document.getElementById(`appInput${idx}`);
+            const userVal = parseInt(inputEl.value);
+            const q = appQuestions[idx];
+            const fbDiv = document.getElementById(`appFeedback${idx}`);
+            const isCorrect = (userVal === q.correct);
+            if (isCorrect) {
+                fbDiv.innerHTML = `✅ 正确！ ${q.hint}`;
+                fbDiv.className = 'feedback correct';
+            } else {
+                fbDiv.innerHTML = `❌ 错误！ 正确答案是 ${q.correct}。 ${q.hint} （您的答案：${isNaN(userVal) ? '未填' : userVal}）`;
+                fbDiv.className = 'feedback wrong';
+            }
+        });
+    });
+</script>
+</body>
+</html>
